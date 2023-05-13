@@ -1,0 +1,29 @@
+version: '3.3'
+
+services:
+  api:
+    container_name: pos.api
+    build: ./app
+    command : gunicorn pos.wsgi:application --bind 0.0.0.0:3762
+    volumes:
+      - ./app:/usr/src/app
+      - ./app/static:/usr/src/app/static
+    ports:
+      - 3762:3762
+    env_file:
+      - ./app/.env
+  
+  nginx:
+    container_name: pos.proxy
+    build: ./nginx
+    volumes:
+      - ./app/static:/usr/src/app/static
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+
+volumes:
+  static_volume:
+
+
